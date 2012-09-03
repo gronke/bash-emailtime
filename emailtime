@@ -1,0 +1,19 @@
+function emailtime {
+        newDate=$(date -d "`cat \"$1\" | grep ^Date | head -1 | sed 's/Date: //g'`" +%y%m%d%H%M)
+        touch -mt $newDate "$1"
+        echo $newDate $1
+}
+
+for emldir in `ls -a | grep ^\\\. | grep -v "\\\.\\\." | sed 's/ /=/g'`; do
+        tmpdir="`echo "$emldir" | sed 's/=/ /g'`/cur/"
+        echo $tmpdir
+
+        if [ -f $tmpdir"dovecot.index.*" ]; then
+                rm "$tmpdir""dovecot.index"
+        fi
+
+        tmpfile=`ls "$tmpdir"`
+        for emlfile in $tmpfile; do
+                emailtime "$tmpdir$emlfile"
+        done
+done
